@@ -50,6 +50,8 @@ char auth[] = "sV5a-Ma-mwdQyYeKItRRPJxHA02-S7L1";
 char ssid[] = "BEZEQINT-F09";
 char pass[] = "IN(HY*^n679adf";
 
+int x;
+
 void setup()
 {
   // Debug console
@@ -61,8 +63,12 @@ void setup()
   //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
 }
 
+  BLYNK_WRITE() // V5 is the number of Virtual Pin  
+  {
+    x = param.asInt();
+    Serial.println(x);
+  }
 void loop()
 {
   Blynk.run();
-  int x = Blynk.virtualRead(V0);
 }
