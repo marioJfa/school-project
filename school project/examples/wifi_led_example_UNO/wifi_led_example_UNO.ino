@@ -8,10 +8,9 @@ Serial.begin(9600);
 
 void loop() {
   int x = Serial.read();
-  if(x>0){
+  while(x>0){
     if(x==1)
       digitalWrite(led,HIGH);
   }
-  else
     digitalWrite(led,LOW);
 }
