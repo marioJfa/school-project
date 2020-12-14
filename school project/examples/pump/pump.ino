@@ -1,15 +1,19 @@
-int lower_threshhold = 50;
-int PumpPin = 8;
-void setup() {
-  pinMode(PumpPin, OUTPUT);
-
-}
-
-void loop() {
-  for(int i=lower_threshhold;i<255; i++){
-    analogWrite(PumpPin, i);
-  }
-  for(int i=254; lower_threshhold<i; i--){
-    analogWrite(PumpPin, i);
-  }
-}
+void setup()
+    {
+     pinMode(3,INPUT);
+     Serial.begin(9600);
+    }
+    void loop()
+    {
+    int x =digitalRead(3);
+//     if(x==1)
+//     {
+//      Serial.println("recv");
+//     }
+// 
+//
+//     else if(x==0){
+//      Serial.println("not recv");
+//     }
+      Serial.print(x);
+    }
