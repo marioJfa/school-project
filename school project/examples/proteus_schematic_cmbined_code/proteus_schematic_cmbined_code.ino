@@ -2,11 +2,13 @@
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27,20,4); // define lcd
 
-int lower_threshhold = 50; // define pump values
-int PumpPin = 8;
+int lower_threshhold = 55; // define pump values
+int PumpPin = 3;
+int i = lower_threshhold;
+int speeding = 1;
 
 int echoPin = 2; // define ultrasonic sensor values
-int trigPin = 3;
+int trigPin = 4;
 long duration;
 int distance;
 
@@ -29,13 +31,6 @@ void loop() {
   lcd.setCursor(1,1);
   lcd.print("Peace"); // lcd end
   
-  for(int i=lower_threshhold;i<255; i++){ // pump start
-    analogWrite(PumpPin, i);
-  }
-  for(int i=254; lower_threshhold<i; i--){
-    analogWrite(PumpPin, i); // pump end
-  }
-
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -46,4 +41,26 @@ void loop() {
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
+
+  if(i==lower_threshhold){// pump start
+    analogWrite(PumpPin, i);
+    speeding = 1;
+    i += 10;
+  }
+  else if(i==255){
+    analogWrite(PumpPin, i);
+    speeding = 0;
+    i -=10;
+  }
+  else if(speeding == 1){
+    analogWrite(PumpPin, i);
+    i += 10;
+  }
+  else if(speeding == 0){
+    analogWrite(PumpPin, i);
+    i -= 10;
+  }
+  for(int i=254; lower_threshhold<i; i--){
+    analogWrite(PumpPin, i); // pump end
+  }
 }
