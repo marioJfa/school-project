@@ -1,0 +1,15 @@
+motor differential (2 motors)
+
+communication (esp8266)
+
+arduino (as motherboard)
+
+pump
+
+motor to push the package off
+
+water line
+
+camera
+
+phone app
