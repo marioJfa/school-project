@@ -1,3 +1,11 @@
+//LCD
+//identifying LCD related variables
+int LCD_Address = 0x27;
+int LCD_Columns = 16;
+int LCD_Rows = 2;
+int LCD_status_updated = 0;
+//end
+
 
 //identifying motor system related variables
 
@@ -17,8 +25,10 @@ int v1, v2;
 
 //including essintial libraries
 
-#include <SoftwareSerial.h> 
-#include <BlynkSimpleSerialBLE.h>
+  #include <BlynkSimpleSerialBLE.h>
+  //For LCD
+  #include <Wire.h> 
+  #include <LiquidCrystal_I2C.h>
 
 //end
 
@@ -26,7 +36,6 @@ int v1, v2;
 //identifying essential connection variables
 
 #define BLYNK_USE_DIRECT_CONNECT
-SoftwareSerial DebugSerial(2, 3); // RX, TX
 char auth[] = "???";
 
 //end
@@ -117,18 +126,43 @@ void drive(){
 
 //end
 
+//LCD inetializiation 
+LiquidCrystal_I2C lcd(LCD_Address,LCD_Columns,LCD_Rows);
+//end
+
+void LCD(){
+  if(LCD_status_updated == 0){
+   lcd.setCursor(1,1);
+   lcd.print("Connected");
+  }
+}
+
 void setup() {
-  DebugSerial.begin(38400);
-  DebugSerial.println("Waiting for connections...");
   Serial.begin(38400);
   Blynk.begin(Serial, auth);
-  pinMode(Motor_R_Speed, OUTPUT);
+  pinMode(Motor_R_Speed, OUTPUT);   // initializing the motors
   pinMode(Motor_R_Dir, OUTPUT);
   pinMode(Motor_L_Speed, OUTPUT);
   pinMode(Motor_L_Dir, OUTPUT);
+  lcd.init();                      // initializing the lcd 
+  lcd.backlight();
+  lcd.setCursor(1,0);
+  lcd.print("Car Ready");
+  lcd.setCursor(1,1);
+  lcd.print("Awaiting connection...");
 }
 
 void loop() {
   Blynk.run();
-  drive();
+  if (Blynk.connected(){
+      LCD();
+      drive();
+  }
+  else{
+    LCD_status_updated = 0;
+    lcd.setCursor(1,0);
+    lcd.print("Disconnected");
+    lcd.setCursor(1,1);
+    lcd.print("Please reconnect...");
+  }
 }
