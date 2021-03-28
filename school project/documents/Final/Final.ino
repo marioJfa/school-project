@@ -87,29 +87,17 @@ void Stop(){
   digitalWrite(Motor_L_Dir, 0);
 }
 //car turnning algorithms
-void Forward_Right_Turn(){
+void Turn_Right(){
   analogWrite(Motor_R_Speed, throttle[0]-turn[0]);
-  digitalWrite(Motor_R_Dir, 0);
+  digitalWrite(Motor_R_Dir, throttle[1]);
   analogWrite(Motor_L_Speed, throttle[0]+turn[0]);
-  digitalWrite(Motor_L_Dir, 0);
+  digitalWrite(Motor_L_Dir, throttle[1]);
 }
-void Backwards_Right_Turn(){
-  analogWrite(Motor_R_Speed, throttle[0]-turn[0]);
-  digitalWrite(Motor_R_Dir, 1);
-  analogWrite(Motor_L_Speed, throttle[0]+turn[0]);
-  digitalWrite(Motor_L_Dir, 1);
-}
-void Forward_Left_Turn(){
+void Turn_Left(){
   analogWrite(Motor_R_Speed, throttle[0]+turn[0]);
-  digitalWrite(Motor_R_Dir, 0);
+  digitalWrite(Motor_R_Dir, throttle[1]);
   analogWrite(Motor_L_Speed, throttle[0]-turn[0]);
-  digitalWrite(Motor_L_Dir, 0);
-}
-void Backwards_Left_Turn(){
-  analogWrite(Motor_R_Speed, throttle[0]+turn[0]);
-  digitalWrite(Motor_R_Dir, 1);
-  analogWrite(Motor_L_Speed, throttle[0]-turn[0]);
-  digitalWrite(Motor_L_Dir, 1);
+  digitalWrite(Motor_L_Dir, throttle[1]);
 }
 //end
 
@@ -120,20 +108,10 @@ void drive(){
     Stop();
   }
   else if(turn[1] == 1){
-    if(throttle[1] == 0){
-      Forward_Right_Turn();
-    }
-    else if(throttle[1] == 1){
-      Backwards_Right_Turn();
-    }
+    Turn_Right();
   }
   else if(turn[1] == 0){
-    if(throttle[1] == 0){
-      Forward_Left_Turn();
-    }
-    else if(throttle[1] == 1){
-      Backwards_Left_Turn();
-    }
+    Turn_Left();
   }
 }
 
