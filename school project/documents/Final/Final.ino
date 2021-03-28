@@ -120,18 +120,18 @@ void drive(){
     Stop();
   }
   else if(turn[1] == 1){
-    if(throttle[1] == 1){
+    if(throttle[1] == 0){
       Forward_Right_Turn();
     }
-    else if(throttle[1] == 0){
+    else if(throttle[1] == 1){
       Backwards_Right_Turn();
     }
   }
   else if(turn[1] == 0){
-    if(throttle[1] == 1){
+    if(throttle[1] == 0){
       Forward_Left_Turn();
     }
-    else if(throttle[1] == 0){
+    else if(throttle[1] == 1){
       Backwards_Left_Turn();
     }
   }
