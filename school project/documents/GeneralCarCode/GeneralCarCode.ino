@@ -127,7 +127,7 @@ void drive(int throt,int turnn){
     Stop();
   }
   else if(turn[1] == 1){
-    if(turn[0]<=30){
+    if(turn_val[0]<=30){
       Linear();
     }
     else if(turn_val[0]>30){
@@ -135,7 +135,7 @@ void drive(int throt,int turnn){
     }
   }
   else if(turn[1] == 0){
-    if(turn[0]<=30){
+    if(turn_val[0]<=30){
       Linear();
     }
     else if(turn_val[0]>30){

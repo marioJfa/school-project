@@ -11,7 +11,7 @@ int LCD_status_updated = 0;
 
 int Motor_R_Speed  = 5, Motor_R_Dir[] = {6,7}, Motor_L_Speed =9, Motor_L_Dir[] ={10,11};
 int turn[2]; //[turn_value, turn_Dir]
-int turn_val[2]; //used inside functions
+int turn_val; //used inside functions
 int turning_forward_direction = 0,turning_reverse_direction = 1; // reverse for reversing the turning directions
 int Max_turn_value = 45;
 int Min_turn_value = 10;
@@ -45,13 +45,10 @@ SoftwareSerial Bluetooth(2,3);
 //turning functions
 
 void get_turn_val(int turn_input_val){
-  Serial.println("Turn_Value");
   if((turn_input_val%2)==1){
-    turn[0] = map(turn_input_val,0,255,Min_turn_value,Max_turn_value);
     turn[1] = turning_forward_direction;
   }
   else if((turn_input_val%2)==0){
-    turn[0] = map(turn_input_val,0,255,Min_turn_value,Max_turn_value);
     turn[1] = turning_reverse_direction;
   }
 }
@@ -91,30 +88,30 @@ void Stop(){
 //car turnning algorithms
 void Turn_Right(){
   Serial.println("Turn_Right");
-  analogWrite(Motor_R_Speed, (throttle[0]-turn[0]));
+  analogWrite(Motor_R_Speed, turn[0]);
   digitalWrite(Motor_R_Dir[0], throttle_Dir[0]);
   digitalWrite(Motor_R_Dir[1], throttle_Dir[1]);
-  analogWrite(Motor_L_Speed, (throttle[0]+turn[0]));
-  digitalWrite(Motor_L_Dir[0], throttle_Dir[0]);
-  digitalWrite(Motor_L_Dir[1], throttle_Dir[1]);
+  analogWrite(Motor_L_Speed, turn[0]);
+  digitalWrite(Motor_L_Dir[0], throttle_Dir[1]);
+  digitalWrite(Motor_L_Dir[1], throttle_Dir[0]);
 }
 void Turn_Left(){
   Serial.println("Turn_Left");
-  analogWrite(Motor_R_Speed, (throttle[0]+turn[0]));
+  analogWrite(Motor_R_Speed, turn[0]);
   digitalWrite(Motor_R_Dir[0], throttle_Dir[0]);
   digitalWrite(Motor_R_Dir[1], throttle_Dir[1]);
-  analogWrite(Motor_L_Speed, (throttle[0]-turn[0]));
-  digitalWrite(Motor_L_Dir[0], throttle_Dir[0]);
-  digitalWrite(Motor_L_Dir[1], throttle_Dir[1]);
+  analogWrite(Motor_L_Speed, turn[0]);
+  digitalWrite(Motor_L_Dir[0], throttle_Dir[1]);
+  digitalWrite(Motor_L_Dir[1], throttle_Dir[0]);
 }
 void Linear(){
   Serial.println("Linear");
   analogWrite(Motor_R_Speed, throttle[0]);
-  digitalWrite(Motor_R_Dir[0], throttle_Dir[0]);
-  digitalWrite(Motor_R_Dir[1], throttle_Dir[1]);
+  digitalWrite(Motor_R_Dir[0], throttle_Dir[1]);
+  digitalWrite(Motor_R_Dir[1], throttle_Dir[0]);
   analogWrite(Motor_L_Speed, throttle[0]);
-  digitalWrite(Motor_L_Dir[0], throttle_Dir[0]);
-  digitalWrite(Motor_L_Dir[1], throttle_Dir[1]);
+  digitalWrite(Motor_L_Dir[0], throttle_Dir[1]);
+  digitalWrite(Motor_L_Dir[1], throttle_Dir[0]);
 }
 //end
 
@@ -127,18 +124,18 @@ void drive(int throt,int turnn){
     Stop();
   }
   else if(turn[1] == 1){
-    if(turn[0]<=30){
+    if(turn_val<=230){
       Linear();
     }
-    else if(turn_val[0]>30){
+    else if(turn_val>230){
       Turn_Right();
     }
   }
   else if(turn[1] == 0){
-    if(turn[0]<=30){
+    if(turn_val<=230){
       Linear();
     }
-    else if(turn_val[0]>30){
+    else if(turn_val>230){
       Turn_Left();
     }
   }
@@ -163,6 +160,7 @@ void LCD(){
 }
 
 void setup() {
+  turn[0]=200; //change to change the turning speed
   lcd.init();                      // initializing the lcd 
   lcd.backlight();
   lcd.setCursor(1,0);
@@ -176,16 +174,16 @@ void setup() {
 void loop() {
   if(Bluetooth.available()>=2){
       Serial.println("Bluetooth");
-      turn_val[0] = Bluetooth.read();
+      turn_val = Bluetooth.read();
       delay(5);
       throttle_val[0] = Bluetooth.read();
       if(throttle_val[0]>0){
         lcd.clear();
         lcd.setCursor(1,0);
-        lcd.print(turn_val[0]);
+        lcd.print(turn_val);
         lcd.setCursor(1,1);
         lcd.print(throttle_val[0]);
-      drive(throttle_val[0],turn_val[0]);
+      drive(throttle_val[0],turn_val);
     }
       else{
       Stop();
