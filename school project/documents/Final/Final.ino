@@ -11,6 +11,7 @@ int LCD_status_updated = 0;
 
 int Motor_R_Speed  = 5, Motor_R_Dir[] = {6,7}, Motor_L_Speed =9, Motor_L_Dir[] ={10,11};
 int turn[2]; //[turn_value, turn_Dir]
+int turn_threshold = 220; //change to change the threshhold at which the car starts turning
 int turn_val; //used inside functions
 int turning_forward_direction = 0,turning_reverse_direction = 1; // reverse for reversing the turning directions
 int Max_turn_value = 45;
@@ -89,20 +90,20 @@ void Stop(){
 void Turn_Right(){
   Serial.println("Turn_Right");
   analogWrite(Motor_R_Speed, turn[0]);
-  digitalWrite(Motor_R_Dir[0], throttle_Dir[0]);
-  digitalWrite(Motor_R_Dir[1], throttle_Dir[1]);
+  digitalWrite(Motor_R_Dir[0], turning_reverse_direction);
+  digitalWrite(Motor_R_Dir[1], turning_forward_direction);
   analogWrite(Motor_L_Speed, turn[0]);
-  digitalWrite(Motor_L_Dir[0], throttle_Dir[1]);
-  digitalWrite(Motor_L_Dir[1], throttle_Dir[0]);
+  digitalWrite(Motor_L_Dir[0], turning_forward_direction);
+  digitalWrite(Motor_L_Dir[1], turning_reverse_direction);
 }
 void Turn_Left(){
   Serial.println("Turn_Left");
   analogWrite(Motor_R_Speed, turn[0]);
-  digitalWrite(Motor_R_Dir[0], throttle_Dir[0]);
-  digitalWrite(Motor_R_Dir[1], throttle_Dir[1]);
+  digitalWrite(Motor_R_Dir[0], turning_reverse_direction);
+  digitalWrite(Motor_R_Dir[1], turning_forward_direction);
   analogWrite(Motor_L_Speed, turn[0]);
-  digitalWrite(Motor_L_Dir[0], throttle_Dir[1]);
-  digitalWrite(Motor_L_Dir[1], throttle_Dir[0]);
+  digitalWrite(Motor_L_Dir[0], turning_forward_direction);
+  digitalWrite(Motor_L_Dir[1], turning_reverse_direction);
 }
 void Linear(){
   Serial.println("Linear");
@@ -124,18 +125,18 @@ void drive(int throt,int turnn){
     Stop();
   }
   else if(turn[1] == 1){
-    if(turn_val<=230){
+    if(turn_val<=turn_threshold){
       Linear();
     }
-    else if(turn_val>230){
+    else if(turn_val>turn_threshold){
       Turn_Right();
     }
   }
   else if(turn[1] == 0){
-    if(turn_val<=230){
+    if(turn_val<=turn_threshold){
       Linear();
     }
-    else if(turn_val>230){
+    else if(turn_val>turn_threshold){
       Turn_Left();
     }
   }
