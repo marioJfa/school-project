@@ -34,8 +34,9 @@ int LCD_status_updated = 0;
 
 
 //identifying motor system related variables
-
-int Motor_R_Speed  = 5, Motor_R_Dir[] = {6,7}, Motor_L_Speed =9, Motor_L_Dir[] = {10,11};
+int Pump_Pin = 4;
+int Pump_Speed = 240;
+int Motor_R_Speed  = 6, Motor_R_Dir[] = {7,8}, Motor_L_Speed =9, Motor_L_Dir[] = {10,11};
 int turn_Dir;
 int turn_Speed = 200; //change to change the turning speed
 int throttle_Speed = 240; 
@@ -44,6 +45,14 @@ int throttle_Speed = 240;
 
 //Data
 int DATA;
+//end
+
+//UltraSonic Sensor
+int echoPin = 2;
+int trigPin = 3;
+long duration;
+int distance;
+//end
 
 //end
 
@@ -59,17 +68,28 @@ MyMotorsLibrary Motors(Motor_R_Speed , Motor_R_Dir[0] , Motor_R_Dir[1] , Motor_L
 
 //identifying essential connection variables
 
-SoftwareSerial Bluetooth(2,3);
+SoftwareSerial Bluetooth(12,33);
 
 //end
 
 void drive(){
-  Serial.println("drive");
     if(DATA == 8){
       Motors.Stop();
     }
     else if(DATA == 3){
-      Motors.Linear(throttle_Speed,1,0);
+      digitalWrite(trigPin, LOW);
+      delayMicroseconds(2);
+      digitalWrite(trigPin, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(trigPin, LOW);
+      duration = pulseIn(echoPin, HIGH);
+      distance = duration * 0.034 / 2;
+      if(distance >= 10){
+        Motors.Linear(throttle_Speed,1,0);
+      }
+      else{
+        Motors.Stop();
+      }
     }
     else if(DATA == 4){
       Motors.Linear(throttle_Speed,0,1);
@@ -97,6 +117,9 @@ void LCD(){
 }
 
 void setup() {
+  pinMode(Pump_Pin,OUTPUT);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT);
   lcd.init();                      // initializing the lcd 
   lcd.backlight();
   lcd.setCursor(1,0);
@@ -104,20 +127,24 @@ void setup() {
   lcd.setCursor(1,1);
   lcd.print("connecting...");
   Bluetooth.begin(9600);
-  Serial.begin(9600);
 }
 
 void loop() {
-  delay(10);
-  if(Bluetooth.available()>=2){
-      Serial.println("Bluetooth");
+  while(Bluetooth.available()>=2){
       DATA = Bluetooth.read();
-      lcd.clear();
-      lcd.setCursor(1,0);
-      lcd.print(DATA);
-//      drive(throttle_val[0],turn_val);
+      if(DATA == 7){
+        digitalWrite(Pump_Pin, HIGH);
+        Motors.Stop();
+        lcd.clear();
+        lcd.print(DATA);
+        delay(5);
+      }
+      else{
+        digitalWrite(Pump_Pin, LOW);
+        drive();
+        lcd.clear();
+        lcd.print(DATA);
+        delay(5);
+      }
     }
-//      else{
-//      Motors.Stop();
-//    }
 }
