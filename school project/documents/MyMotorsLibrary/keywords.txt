@@ -1,0 +1,5 @@
+MyMotorsLibrary	KEYWORD1
+Linear	KEYWORD2
+Turn_Left	KEYWORD2
+Turn_Right	KEYWORD2
+Stop	KEYWORD2
